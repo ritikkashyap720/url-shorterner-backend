@@ -1,5 +1,5 @@
 const express = require("express");
-const urlRouter = require("./routes/Url.routes");
+const urlRouter = require("./routes/url.routes");
 const connectDatabase = require("./connection");
 const userRouter = require("./routes/User.routes");
 const cookieParser = require('cookie-parser');
