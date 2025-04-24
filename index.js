@@ -1,7 +1,7 @@
 const express = require("express");
 const urlRouter = require("./routes/url.routes");
 const connectDatabase = require("./connection");
-const userRouter = require("./routes/User.routes");
+const userRouter = require("./routes/user.routes");
 const cookieParser = require('cookie-parser');
 const cors = require("cors")
 require("dotenv").config()
