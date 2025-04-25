@@ -50,6 +50,8 @@ async function getUrl(req, res) {
                 referrer: req.get('Referrer') || '',
             };
 
+            urlEntry.clicks = urlEntry.clicks + 1
+
             urlEntry.clickInfo.push(clickData)
             await urlEntry.save();
 

@@ -8,4 +8,5 @@ urlRouter.post("/newurl", restrictedToLoginUserOnly, createUrl)
 urlRouter.delete("/deleteUrl/:urlID", restrictedToLoginUserOnly, deleteUrl)
 urlRouter.get("/allUrl", getAllUsersUrl)
 urlRouter.get("/:shortID", getUrl)
+
 module.exports = urlRouter
