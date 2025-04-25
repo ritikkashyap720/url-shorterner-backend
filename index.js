@@ -6,9 +6,6 @@ const cookieParser = require('cookie-parser');
 const cors = require("cors")
 require("dotenv").config()
 
-
-
-
 // server
 const origin = process.env.ORIGIN_URL||"http://localhost:5173";
 const server = express();
@@ -25,6 +22,9 @@ server.use(cors(corsOptions))
 server.use(express.json())
 server.use(express.urlencoded({extended:true}))
 server.use(cookieParser())
+server.set('trust proxy', true);
+
+
 
 // routes
 server.use("/url",urlRouter)

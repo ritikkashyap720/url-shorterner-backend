@@ -23,18 +23,22 @@ async function createUrl(req, res) {
 
 async function getUrl(req, res) {
     const { shortID } = req.params;
-   
+
 
     if (shortID) {
         try {
             const urlEntry = await Url.findOne({ shortID })
-            if(!urlEntry) return res.status(400).json({msg:"Url not found"})
-                const ua = UAParser(req.headers['user-agent']);
-            const geo = geoip.lookup(req.ip) || {};
-        
+            if (!urlEntry) return res.status(400).json({ msg: "Url not found" })
+            const ua = UAParser(req.headers['user-agent']);
+            const clientIp =
+            req.headers['x-forwarded-for']?.split(',')[0] ||
+            req.connection.remoteAddress ||
+            req.ip;
+            const geo = geoip.lookup(clientIp) || {};
+
             const clickData = {
                 timestamp: new Date(),
-                ip: req.ip,
+                ip: clientIp,
                 browser: `${ua.browser.name} ${ua.browser.version}`,
                 os: `${ua.os.name} ${ua.os.version}`,
                 device: ua.device.type || 'desktop',
