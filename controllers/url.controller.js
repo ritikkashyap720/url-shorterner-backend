@@ -1,6 +1,7 @@
 var uniqid = require('uniqid');
 const Url = require('../modals/url.modal');
-
+const UAParser = require('ua-parser-js');
+const geoip = require('geoip-lite');
 
 async function createUrl(req, res) {
     const { mainUrl } = req.body;
@@ -12,7 +13,7 @@ async function createUrl(req, res) {
             await Url.create({
                 shortID, mainUrl, createdBy: user._id
             })
-            res.json({ msg: "success" })
+            res.status(200).json({ msg: "success" })
         } catch (error) {
             console.log(error)
         }
@@ -22,13 +23,37 @@ async function createUrl(req, res) {
 
 async function getUrl(req, res) {
     const { shortID } = req.params;
+   
+
     if (shortID) {
         try {
-            const url = await Url.findOneAndUpdate({ shortID: shortID }, { $inc: { "clicks": 1 } }, { new: true })
-            res.json({url:url.mainUrl})
+            const urlEntry = await Url.findOne({ shortID })
+            if(!urlEntry) return res.status(400).json({msg:"Url not found"})
+                const ua = UAParser(req.headers['user-agent']);
+            const geo = geoip.lookup(req.ip) || {};
+        
+            const clickData = {
+                timestamp: new Date(),
+                ip: req.ip,
+                browser: `${ua.browser.name} ${ua.browser.version}`,
+                os: `${ua.os.name} ${ua.os.version}`,
+                device: ua.device.type || 'desktop',
+                country: geo.country || '',
+                region: geo.region || '',
+                city: geo.city || '',
+                userAgent: req.headers['user-agent'],
+                language: req.headers['accept-language']?.split(',')[0],
+                referrer: req.get('Referrer') || '',
+            };
+
+            urlEntry.clickInfo.push(clickData)
+            await urlEntry.save();
+
+            res.status(201).json({ url: urlEntry.mainUrl })
         } catch (error) {
-            res.json({ msg: "Error fetching the url" })
             console.log(error)
+            res.status(404).json({ msg: "Error fetching the url" })
+
         }
     }
 
@@ -41,7 +66,7 @@ async function getAllUrl(req, res) {
         res.json(allUrls)
 
     } catch (error) {
-        res.json({ msg: "Error fetching urls" })
+        res.status(400).json({ msg: "Error fetching urls" })
     }
 }
 async function deleteUrl(req, res) {
@@ -61,11 +86,11 @@ async function deleteUrl(req, res) {
 async function getAllUsersUrl(req, res) {
     try {
         const allUrls = await Url.find()
-        const shortIDs  = allUrls.map((url)=> { return url.shortID});
-        res.json({ "allurls": shortIDs });
-        
+        const shortIDs = allUrls.map((url) => { return url.shortID });
+        res.status(200).json({ "allurls": shortIDs });
+
     } catch (error) {
-        res.json({ msg: "Error fetching urls" })
+        res.status(404).json({ msg: "Error fetching urls" })
     }
 }
 

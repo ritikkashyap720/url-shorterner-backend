@@ -1,5 +1,19 @@
 const mongoose = require("mongoose")
 
+const clickSchema = new mongoose.Schema({
+    timestamp: { type: Date, default: Date.now },
+    ip: String,
+    browser: String,
+    os: String,
+    device: String,
+    country: String,
+    region: String,
+    city: String,
+    userAgent: String,
+    language: String,
+    referrer: String,
+});
+
 const urlSchema = new mongoose.Schema({
     shortID: {
         type: String,
@@ -13,10 +27,11 @@ const urlSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    clickInfo: [clickSchema],
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
-        required:true
+        required: true
     }
 }, { timestamps: true })
 

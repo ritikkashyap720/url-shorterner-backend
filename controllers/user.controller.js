@@ -7,7 +7,7 @@ async function handleSignin(req, res) {
     const saltRound = 10
     const user = req.user;
     if (user) {
-        res.json({ msg: "authorized" })
+        res.status(200).json({ msg: "authorized" })
     }
     if (name && email && password) {
         try {
@@ -21,13 +21,13 @@ async function handleSignin(req, res) {
                     })
                 })
             } else {
-                res.json({ msg: "Email already exist" })
+                res.status(403).json({ msg: "Email already exist" })
             }
         } catch (error) {
-            res.json({ msg: `Error : ${error}` })
+            res.status(400).json({ msg: `Error : ${error}` })
         }
     } else {
-        res.json({ msg: "All fields are required" })
+        res.status(400).json({ msg: "All fields are required" })
     }
 }
 
@@ -35,7 +35,7 @@ async function handleLogin(req, res) {
     const { email, password } = req.body;
     const user = req.user;
     if (user) {
-        res.json({ msg: "authorized" })
+        res.status(200).json({ msg: "authorized" })
     }
     if (email && password) {
         try {
@@ -46,25 +46,25 @@ async function handleLogin(req, res) {
                     const token = generateToken({ _id: user.id, name: user.name, email: user.email })
                     res.json({ token: token })
                 } else {
-                    res.json({ msg: "Incorrect username or password" })
+                    res.status(401).json({ msg: "Incorrect username or password" })
                 }
             } else {
-                res.json({ msg: "Incorrect username or password" })
+                res.status(401).json({ msg: "Incorrect username or password" })
             }
         } catch (error) {
-            res.json({ error: `Error ${error}` })
+            res.status(403).json({ error: `Error ${error}` })
         }
     } else {
-        res.json({ msg: "All fields are required" })
+        res.status(400).json({ msg: "All fields are required" })
     }
 }
 
-async function handleCheckAuth(req,res){
+async function handleCheckAuth(req, res) {
     const user = req.user
-    if(user){
-        res.json({msg:"authorized"})
-    }else{
-        res.json({msg:"unauthorized"})
+    if (user) {
+        res.status(200).json({ msg: "authorized" })
+    } else {
+        res.status(401).json({ msg: "unauthorized" })
     }
 }
 
